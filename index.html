@@ -333,6 +333,13 @@ function renderActe(idx) {
   // Animate
   content.querySelectorAll('.block').forEach((b, i) => { b.style.animationDelay = (i * 0.07) + 's'; });
 
+  // Enter key on code fields
+  content.querySelectorAll('.code-field').forEach(input => {
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') input.closest('.block-code-input').querySelector('.code-submit').click();
+    });
+  });
+
   // Next button
   const btn = document.getElementById('btn-next');
   document.getElementById('btn-next-label').textContent = acte.nextLabel;
@@ -390,14 +397,17 @@ function buildBlock(block, bi) {
       </div>`;
 
     case 'code-input':
-      return `<div class="block block-code-input">
+      return `<div class="block block-code-input"
+        data-bi="${bi}"
+        data-answer="${block.answer}"
+        data-ok="${block.feedback_ok}"
+        data-ko="${block.feedback_ko}">
         <div class="code-label">${block.label}</div>
         <div class="code-field-wrap">
           <input class="code-field" id="code-${bi}" type="text" placeholder="${block.placeholder}"
             maxlength="10" autocomplete="off" autocorrect="off" spellcheck="false"
-            oninput="this.value=this.value.toUpperCase()"
-            onkeydown="if(event.key==='Enter')submitCode(${bi},'${block.answer}','${block.feedback_ok}','${block.feedback_ko}')">
-          <button class="code-submit" onclick="submitCode(${bi},'${block.answer}','${block.feedback_ok}','${block.feedback_ko}')">OK</button>
+            oninput="this.value=this.value.toUpperCase()">
+          <button class="code-submit" onclick="submitCodeFromBtn(this)">OK</button>
         </div>
         <div class="code-feedback" id="code-fb-${bi}"></div>
       </div>`;
@@ -411,6 +421,15 @@ function toggleTranscript(bi) {
   const btn = t.previousElementSibling;
   t.classList.toggle('open');
   btn.textContent = t.classList.contains('open') ? 'FERMER LA TRANSCRIPTION' : 'LIRE LA TRANSCRIPTION';
+}
+
+function submitCodeFromBtn(btn) {
+  const block = btn.closest('.block-code-input');
+  const bi = block.dataset.bi;
+  const answer = block.dataset.answer;
+  const feedbackOk = block.dataset.ok;
+  const feedbackKo = block.dataset.ko;
+  submitCode(bi, answer, feedbackOk, feedbackKo);
 }
 
 function submitCode(bi, answer, feedbackOk, feedbackKo) {
