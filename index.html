@@ -10,7 +10,6 @@
 :root {
   --red: #cc1a1a;
   --red2: #8a0f0f;
-  --red-glow: rgba(204,26,26,0.4);
   --gold: #c9a84c;
   --bg: #0a0603;
   --bg2: #120c07;
@@ -29,26 +28,21 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 body::after {
   content: '';
   position: fixed; inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.025) 2px, rgba(0,0,0,0.025) 4px);
   pointer-events: none; z-index: 998;
 }
 
-#app { height: 100dvh; display: flex; flex-direction: column; position: relative; }
-
+#app { height: 100dvh; display: flex; flex-direction: column; }
 .screen { display: none; flex-direction: column; height: 100%; animation: fadeIn 0.4s ease; }
 .screen.active { display: flex; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ── SPLASH ── */
 #screen-splash {
-  align-items: center; justify-content: center;
+  align-items: center; justify-content: center; position: relative; overflow: hidden;
   background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(204,26,26,0.13) 0%, transparent 70%), var(--bg);
-  overflow: hidden; position: relative;
 }
-.splash-lines {
-  position: absolute; inset: 0;
-  background: repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(204,26,26,0.03) 40px, rgba(204,26,26,0.03) 41px);
-}
+.splash-lines { position: absolute; inset: 0; background: repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(204,26,26,0.03) 40px, rgba(204,26,26,0.03) 41px); }
 .splash-inner { position: relative; text-align: center; padding: 40px 32px; display: flex; flex-direction: column; align-items: center; }
 .splash-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); margin-bottom: 24px; animation: fadeIn 0.8s ease 0.2s both; }
 .splash-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 16vw, 88px); line-height: 0.9; color: var(--paper); text-shadow: 0 0 60px rgba(204,26,26,0.3); margin-bottom: 6px; animation: fadeIn 0.8s ease 0.35s both; }
@@ -72,15 +66,22 @@ body::after {
 
 .content { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
 
+/* acte banner */
 .acte-banner { position: relative; padding: 32px 24px 24px; background: linear-gradient(180deg, var(--bg3) 0%, var(--bg) 100%); border-bottom: 1px solid var(--border); overflow: hidden; }
 .acte-banner::before { content: attr(data-num); position: absolute; right: -10px; top: -20px; font-family: 'Bebas Neue', sans-serif; font-size: 120px; color: rgba(204,26,26,0.06); line-height: 1; pointer-events: none; }
 .acte-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--red); margin-bottom: 6px; }
 .acte-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 0.04em; color: var(--paper); line-height: 1; margin-bottom: 6px; }
 .acte-loc { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gold); letter-spacing: 0.08em; }
 
+/* blocks */
 .blocks { padding: 20px 20px 40px; display: flex; flex-direction: column; gap: 16px; }
 .block { border-radius: 3px; overflow: hidden; animation: blockIn 0.4s ease both; }
 @keyframes blockIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* hidden blocks — revealed after code */
+.block-hidden { display: none; }
+.block-hidden.revealed { display: block; animation: revealIn 0.5s cubic-bezier(0.34,1.2,0.64,1) both; }
+@keyframes revealIn { from { opacity: 0; transform: translateY(16px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
 /* narrative */
 .block-narrative { background: var(--bg2); border: 1px solid var(--border); padding: 18px 20px; font-size: 16px; line-height: 1.75; }
@@ -89,16 +90,13 @@ body::after {
 /* vocal */
 .block-vocal { background: #0d0404; border: 1px solid var(--border2); position: relative; }
 .block-vocal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--red2), var(--red), var(--red2)); }
-.block-vocal.locked { opacity: 0.35; pointer-events: none; }
 .vocal-header { display: flex; align-items: center; gap: 12px; padding: 16px 18px 12px; border-bottom: 1px solid rgba(204,26,26,0.15); }
 .vocal-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 0 16px rgba(204,26,26,0.4); font-size: 16px; }
 .vocal-from { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; }
 .vocal-name { font-size: 15px; font-weight: 600; color: var(--paper); }
 .vocal-player { padding: 14px 18px 16px; display: flex; flex-direction: column; gap: 10px; }
-.audio-elem { width: 100%; outline: none; border-radius: 2px; }
-audio::-webkit-media-controls-panel { background: #1a0808; }
+audio { width: 100%; border-radius: 2px; }
 .vocal-transcript-btn { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); background: none; border: 1px solid var(--border); padding: 6px 12px; border-radius: 2px; cursor: pointer; align-self: flex-start; transition: all 0.2s; }
-.vocal-transcript-btn:active { color: var(--text); border-color: var(--text-dim); }
 .vocal-transcript { display: none; padding: 12px 16px; background: rgba(0,0,0,0.3); font-size: 14px; font-style: italic; color: rgba(245,239,224,0.6); line-height: 1.8; border-top: 1px solid var(--border); }
 .vocal-transcript.open { display: block; animation: fadeIn 0.3s ease; }
 
@@ -119,6 +117,12 @@ audio::-webkit-media-controls-panel { background: #1a0808; }
 .wa-title { font-size: 14px; font-weight: 600; color: var(--paper); margin-bottom: 2px; }
 .wa-sub { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
 
+/* media */
+.block-media { background: var(--bg2); border: 1px solid var(--border); overflow: hidden; }
+.media-label { padding: 10px 16px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--border); }
+.media-img { width: 100%; display: block; filter: brightness(0.88) contrast(1.08) saturate(0.8); }
+.media-error { display: none; padding: 14px 16px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--red); }
+
 /* code input */
 .block-code-input { background: var(--bg2); border: 1px solid var(--border); padding: 20px; }
 .code-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 14px; }
@@ -128,37 +132,22 @@ audio::-webkit-media-controls-panel { background: #1a0808; }
 .code-field.error { border-color: var(--red); animation: shake 0.3s ease; }
 .code-field.success { border-color: #2a8a2a; color: #6fcf6f; }
 @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
-.code-submit { background: var(--red); color: var(--paper); border: none; padding: 14px 20px; border-radius: 2px; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s; }
+.code-submit { background: var(--red); color: var(--paper); border: none; padding: 14px 20px; border-radius: 2px; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
 .code-submit:active { background: var(--red2); transform: scale(0.97); }
-.code-feedback { margin-top: 10px; min-height: 20px; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.06em; }
+.code-feedback { margin-top: 10px; min-height: 18px; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.06em; }
 .code-feedback.ok { color: #6fcf6f; }
 .code-feedback.ko { color: var(--red); }
 
 /* next button */
 .btn-next-wrap { padding: 12px 20px; flex-shrink: 0; background: var(--bg); border-top: 1px solid var(--border); }
 .btn-next { width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 2px; padding: 16px; font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.1em; color: var(--text-dim); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-.btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn-next.unlocked { background: var(--red); color: var(--paper); border-color: var(--red); box-shadow: 0 0 30px rgba(204,26,26,0.25); }
+.btn-next:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-next.unlocked { background: var(--red); color: var(--paper); border-color: var(--red); box-shadow: 0 0 30px rgba(204,26,26,0.2); }
 .btn-next.unlocked:active { transform: scale(0.98); }
 .bottom-safe { height: env(safe-area-inset-bottom, 8px); background: var(--bg); flex-shrink: 0; }
 
-/* media */
-.block-media { background: var(--bg2); border: 1px solid var(--border); overflow: hidden; }
-.media-label { padding: 10px 16px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--border); }
-.media-img { width: 100%; display: block; filter: brightness(0.9) contrast(1.05) saturate(0.85); }
-video.media-img { filter: none; background: #000; max-height: 260px; object-fit: contain; }
-
-/* success overlay */
-.success-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 40px; text-align: center; z-index: 100; }
-.success-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
-.success-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(47,204,47,0.15); border: 2px solid #2fcc2f; display: flex; align-items: center; justify-content: center; font-size: 28px; animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
-@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.success-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--paper); letter-spacing: 0.06em; }
-.success-text { font-size: 16px; color: var(--text-dim); font-style: italic; line-height: 1.7; }
-.success-close { margin-top: 8px; background: var(--red); color: var(--paper); border: none; padding: 14px 40px; font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.1em; border-radius: 2px; cursor: pointer; }
-
 /* final */
-#screen-final { align-items: center; justify-content: center; background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(204,26,26,0.12) 0%, transparent 70%), var(--bg); text-align: center; padding: 40px 32px; overflow-y: auto; }
+#screen-final { align-items: center; justify-content: center; text-align: center; padding: 40px 32px; overflow-y: auto; background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(204,26,26,0.12) 0%, transparent 70%), var(--bg); }
 .final-inner { max-width: 400px; margin: 0 auto; }
 .final-icon { font-size: 48px; margin-bottom: 20px; }
 .final-title { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: var(--paper); line-height: 1; margin-bottom: 8px; }
@@ -170,7 +159,6 @@ video.media-img { filter: none; background: #000; max-height: 260px; object-fit:
 <body>
 <div id="app">
 
-  <!-- SPLASH -->
   <div id="screen-splash" class="screen active">
     <div class="splash-lines"></div>
     <div class="splash-inner">
@@ -183,24 +171,22 @@ video.media-img { filter: none; background: #000; max-height: 260px; object-fit:
     </div>
   </div>
 
-  <!-- GAME -->
   <div id="screen-game" class="screen">
     <div class="topbar">
       <div class="topbar-logo">CDP</div>
       <div class="topbar-progress" id="progress-dots"></div>
-      <div class="topbar-step" id="step-label">ACTE 1/6</div>
+      <div class="topbar-step" id="step-label">ACTE 1 / 6</div>
     </div>
     <div class="content" id="game-content"></div>
     <div class="btn-next-wrap">
       <button class="btn-next" id="btn-next" disabled onclick="nextActe()">
-        <span id="btn-next-label">ACTE SUIVANT</span>
+        <span>CONTINUER</span>
         <span>→</span>
       </button>
     </div>
     <div class="bottom-safe"></div>
   </div>
 
-  <!-- FINAL -->
   <div id="screen-final" class="screen">
     <div class="final-inner">
       <div class="final-icon">🎉</div>
@@ -212,104 +198,104 @@ video.media-img { filter: none; background: #000; max-height: 260px; object-fit:
 
 </div>
 
-<!-- SUCCESS OVERLAY -->
-<div class="success-overlay" id="success-overlay">
-  <div class="success-icon">✓</div>
-  <div class="success-title">Code validé</div>
-  <div class="success-text" id="success-text">Bien joué.</div>
-  <button class="success-close" onclick="closeSuccess()">CONTINUER</button>
-</div>
-
 <script>
 const BASE = 'https://raw.githubusercontent.com/titouan-alt/Escape-game-Barcelona/main/';
-
-const MEDIA = {
-  barri:          BASE + 'photo-barri.jpg',
-  consigneFermee: BASE + 'photo-consigne-fermee.jpg',
-  consigneOuverte: BASE + 'photo-consigne-ouverte.jpg',
-  sagrada:        BASE + 'photo-sagrada.jpg',
-};
-
 const AUDIO = {
   professeur: BASE + 'ElevenLabs_2026-05-19T19_17_24_Edward - British, Dark, Seductive, Low_pvc_sp87_s78_sb79_se38_b_m2.mp3',
   sierra:     BASE + 'ElevenLabs_2026-05-19T19_32_54_Caty - Droll, Wry and Dry_pvc_sp100_s50_sb75_se0_b_m2.mp3',
   arturito1:  BASE + 'ElevenLabs_2026-05-19T19_21_46_Martin Osborne - Polished and Intense_pvc_sp114_s30_sb75_se49_b_m2.mp3',
   arturito2:  BASE + 'ElevenLabs_2026-05-19T19_34_04_Martin Osborne - Polished and Intense_pvc_sp114_s30_sb75_se49_b_m2.mp3',
 };
+const IMG = {
+  barri:           BASE + 'photo-barri.jpg',
+  consigneFermee:  BASE + 'photo-consigne-fermee.jpg',
+  consigneOuverte: BASE + 'photo-consigne-ouverte.jpg',
+  batllo:          BASE + 'photo-batllo.jpg',
+  sagrada:         BASE + 'photo-sagrada.jpg',
+};
 
-// unlock = 'none' → bouton débloqué dès le départ
-// unlock = 'code' → bouton débloqué par code correct
-// unlock = 'photo' → bouton débloqué par code MJ après photo WhatsApp
+// block types:
+//   narrative, vocal, enigme, instruction, whatsapp, photo
+//   code-input : valide un code et révèle les blocs "hidden" qui suivent
+//   --- blocks après un code-input avec hidden:true sont masqués jusqu'à validation
+
 const ACTES = [
   {
     num:'01', tag:'Acte 1', title:'Le Briefing', loc:'📍 Arc de Triomf',
-    unlock:'none', nextLabel:'ON Y VA',
+    autoUnlock: true,
     blocks:[
-      {type:'narrative', text:'L\'opération commence. Prenez vos cartes de rôle. Ne perdez pas les faux billets. Et surtout — <em>ne perdez pas Arturito.</em>'},
+      {type:'narrative', text:'L\'opération commence. <em>Ne perdez pas Arturito.</em>'},
       {type:'vocal', from:'Message chiffré', name:'Le Professeur', icon:'🎭', audio: AUDIO.professeur,
-       transcript:'Bella ciao. Si vous entendez ce message, c\'est que l\'opération a commencé. Arturito a disparu depuis hier soir. Il nous a laissé une seule piste — une photo prise dans le Barri Gòtic. Je vous l\'envoie maintenant. Trouvez l\'endroit exact. Quand vous y êtes — photo. Vous me l\'envoyez. Je vous dirai si c\'est le bon endroit. Faites vite. Monica arrive demain. Bella ciao.'},
-      {type:'instruction', label:'Mission', text:'Retrouvez l\'endroit exact de cette photo dans le Barri Gòtic. Quand vous y êtes — photographiez et envoyez au Professeur.'},
-      {type:'photo', caption:'Dernière trace connue d\'Arturito — Barri Gòtic', src:'MEDIA.barri'},
+       transcript:'Bella ciao. Si vous entendez ce message, c\'est que l\'opération a commencé. Arturito a disparu depuis hier soir. Il nous a laissé une seule piste — une photo prise dans le Barri Gòtic. Regardez bien cette photo. Trouvez l\'endroit exact. Quand vous y êtes — photographiez et envoyez au Professeur sur WhatsApp. Faites vite. Monica arrive demain. Bella ciao.'},
+      {type:'photo', caption:'Dernière trace connue d\'Arturito', src: IMG.barri},
+      {type:'whatsapp', title:'Envoyez votre photo au Professeur', sub:'Quand vous êtes au bon endroit — photographiez et envoyez sur WhatsApp. Il vous répondra avec un code.'},
     ]
   },
   {
     num:'02', tag:'Acte 2', title:'La Piste Froide', loc:'📍 Barri Gòtic — Plaça de Sant Felip Neri',
-    unlock:'photo', nextLabel:'DIRECTION PLAÇA DE CATALUNYA',
+    autoUnlock: false,
     blocks:[
-      {type:'narrative', text:'Ces murs ont de la mémoire. Arturito s\'est arrêté ici hier soir. Vous avez retrouvé l\'endroit — envoyez la photo au Professeur et attendez sa réponse.'},
-      {type:'whatsapp', title:'Envoyez la photo au Professeur', sub:'Une fois validée, il vous enverra un code à entrer ici.'},
-      {type:'code-input', label:'Code de validation — reçu sur WhatsApp', placeholder:'····', answer:'FELIP', feedback_ok:'Bonne localisation. Message d\'Arturito débloqué.', feedback_ko:'Code incorrect. Vérifiez avec le Professeur.'},
-      {type:'vocal', from:'Message reçu', name:'Arturito', icon:'😰', audio: AUDIO.arturito1, locked:true,
+      {type:'narrative', text:'Ces murs ont de la mémoire. Arturito s\'est arrêté ici hier soir.'},
+      {type:'code-input', label:'Code reçu du Professeur sur WhatsApp', placeholder:'····', answer:'FELIP',
+       feedback_ok:'Bonne localisation. Message d\'Arturito débloqué.', feedback_ko:'Code incorrect. Vérifiez avec le Professeur.'},
+      {type:'vocal', from:'Message reçu', name:'Arturito', icon:'😰', audio: AUDIO.arturito1, hidden:true,
        transcript:'Allo ? C\'est moi. Écoutez… j\'ai fait une connerie. Pendant le dernier braquage j\'ai ramassé une clé USB qui traînait. Je savais pas ce que c\'était. Maintenant je sais. Et je crois que quelqu\'un d\'autre le sait aussi. Je suis plus en sécurité. Rejoignez-moi Plaça de Catalunya — fontaine centrale. Venez pas tous ensemble. Et… dites rien à Monica.'},
+      {type:'instruction', label:'Prochaine étape', text:'Direction Plaça de Catalunya. Fontaine centrale. Une fois sur place, prenez une photo de groupe et envoyez-la au Professeur.', hidden:true},
     ]
   },
   {
     num:'03', tag:'Acte 3', title:'La Police Arrive', loc:'📍 Plaça de Catalunya',
-    unlock:'code', nextLabel:'DIRECTION CASA BATLLÓ',
+    autoUnlock: false,
     blocks:[
-      {type:'narrative', text:'Vous êtes sur la place. Fontaine centrale. Quelqu\'un vous observe. Le Professeur attend votre signal.'},
-      {type:'whatsapp', title:'Photo de groupe — fontaine centrale', sub:'Envoyez-la au Professeur. Il vous répondra avec un code.'},
-      {type:'code-input', label:'Code reçu du Professeur', placeholder:'····', answer:'SIERRA', feedback_ok:'Transmission reçue. Message de Sierra débloqué.', feedback_ko:'Code incorrect. Vérifiez avec le Professeur.'},
-      {type:'vocal', from:'Appel entrant', name:'Inspectrice Sierra', icon:'🚔', audio: AUDIO.sierra, locked:true,
-       transcript:'Ici l\'inspectrice Sierra. Je sais qui vous êtes. Je sais ce que vous cherchez. La clé USB qu\'Arturito a récupérée ne lui appartient pas. Elle ne vous appartient pas non plus. Mais je vais vous donner une chance de bien faire les choses. Passeig de Gràcia, numéro 43. Casa Batlló. La clé est dans une consigne. Je vous envoie une photo. Trouvez le code. Récupérez la clé avant que mes hommes ne le fassent. Vous avez une heure. … Bella ciao.'},
-      {type:'instruction', label:'Consigne', text:'Ouvrez l\'enveloppe 2 uniquement quand vous êtes devant la façade de Casa Batlló.'},
-      {type:'photo', caption:'Photo de la consigne — transmise par Sierra', src:'MEDIA.consigneFermee'},
+      {type:'narrative', text:'Fontaine centrale. Quelqu\'un vous observe.'},
+      {type:'whatsapp', title:'Photo de groupe — fontaine centrale', sub:'Envoyez au Professeur. Il vous répondra avec un code.'},
+      {type:'code-input', label:'Code reçu du Professeur sur WhatsApp', placeholder:'····', answer:'SIERRA',
+       feedback_ok:'Transmission reçue. Message de Sierra débloqué.', feedback_ko:'Code incorrect. Vérifiez avec le Professeur.'},
+      {type:'vocal', from:'Appel entrant', name:'Inspectrice Sierra', icon:'🚔', audio: AUDIO.sierra, hidden:true,
+       transcript:'Ici l\'inspectrice Sierra. Je sais qui vous êtes. Je sais ce que vous cherchez. La clé USB qu\'Arturito a récupérée ne lui appartient pas. Elle ne vous appartient pas non plus. Mais je vais vous donner une chance de bien faire les choses. Passeig de Gràcia, numéro 43. Casa Batlló. La clé est dans une consigne. Trouvez le code. Récupérez la clé avant que mes hommes ne le fassent. Vous avez une heure. … Bella ciao.'},
+      {type:'photo', caption:'La consigne — transmise par Sierra', src: IMG.consigneFermee, hidden:true},
+      {type:'instruction', label:'Consigne', text:'Direction Casa Batlló — Passeig de Gràcia 43. Le code de la consigne est caché dans la façade.', hidden:true},
     ]
   },
   {
     num:'04', tag:'Acte 4', title:'Le Braquage Raté', loc:'📍 Casa Batlló — Passeig de Gràcia 43',
-    unlock:'code', nextLabel:'DIRECTION SAGRADA FAMÍLIA',
+    autoUnlock: false,
     blocks:[
-      {type:'narrative', text:'Vous êtes devant la façade. Le dragon vous regarde. La consigne attend. Ouvrez l\'enveloppe 2.'},
-      {type:'enigme', text:'Arturito n\'était pas aussi stupide qu\'il en avait l\'air. Avant de disparaître, il a sécurisé la clé dans une consigne. Le code ? Il l\'a caché dans la façade du bâtiment devant vous. Observez bien. Comptez les colonnes. Comptez les balcons. Additionnez les deux. Divisez par deux. Envoyez le résultat au Professeur — sans virgule.'},
-      {type:'code-input', label:'Code de la consigne', placeholder:'···', answer:'115', feedback_ok:'Consigne ouverte. La clé USB est récupérée.', feedback_ko:'Mauvais code. Arturito dit que vous n\'avez pas bien compté.'},
-      {type:'photo', caption:'Consigne ouverte — clé USB récupérée', src:'MEDIA.consigneOuverte'},
+      {type:'narrative', text:'Vous êtes devant la façade. Le dragon vous regarde.'},
+      {type:'photo', caption:'La façade — observez bien', src: IMG.batllo},
+      {type:'enigme', text:'Arturito a sécurisé la clé dans une consigne. Le code est caché dans cette façade. Comptez les colonnes. Comptez les balcons. Additionnez. Divisez par deux. Envoyez le résultat au Professeur — sans virgule.'},
+      {type:'code-input', label:'Code de la consigne', placeholder:'···', answer:'115',
+       feedback_ok:'Consigne ouverte. La clé USB est récupérée.', feedback_ko:'Mauvais code. Comptez encore.'},
+      {type:'photo', caption:'Consigne ouverte — clé USB récupérée', src: IMG.consigneOuverte, hidden:true},
+      {type:'instruction', label:'Prochaine étape', text:'Direction Sagrada Família. Arturito a laissé une dernière trace sur la façade.', hidden:true},
     ]
   },
   {
     num:'05', tag:'Acte 5', title:'Le Rendez-Vous Manqué', loc:'📍 Sagrada Família',
-    unlock:'photo', nextLabel:'DIRECTION BUNKERS DEL CARMEL',
+    autoUnlock: false,
     blocks:[
-      {type:'narrative', text:'Arturito a été vu ici ce matin. Il a laissé une trace sur la façade. Ouvrez l\'enveloppe 3.'},
-      {type:'instruction', label:'Mission', text:'Retrouvez l\'endroit exact de cette photo sur la façade. Quand vous y êtes — photographiez et envoyez au Professeur.'},
-      {type:'photo', caption:'Dernière trace d\'Arturito — Sagrada Família', src:'MEDIA.sagrada'},
-      {type:'whatsapp', title:'Envoyez la photo de confirmation', sub:'Façade de la Sagrada Família. Le Professeur vous répondra avec un code.'},
-      {type:'code-input', label:'Code reçu du Professeur', placeholder:'····', answer:'GAUDI', feedback_ok:'Localisation confirmée. Dernier message d\'Arturito débloqué.', feedback_ko:'Code incorrect. Vérifiez avec le Professeur.'},
-      {type:'vocal', from:'Appel entrant', name:'Arturito', icon:'😅', audio: AUDIO.arturito2, locked:true,
+      {type:'narrative', text:'Arturito a été vu ici ce matin. Retrouvez l\'endroit exact de cette photo sur la façade.'},
+      {type:'photo', caption:'Dernière trace d\'Arturito — Sagrada Família', src: IMG.sagrada},
+      {type:'whatsapp', title:'Envoyez votre photo de confirmation', sub:'Quand vous êtes au bon endroit — photographiez et envoyez au Professeur. Il vous répondra avec un code.'},
+      {type:'code-input', label:'Code reçu du Professeur sur WhatsApp', placeholder:'····', answer:'GAUDI',
+       feedback_ok:'Localisation confirmée. Dernier message d\'Arturito débloqué.', feedback_ko:'Code incorrect. Vérifiez avec le Professeur.'},
+      {type:'vocal', from:'Appel entrant', name:'Arturito', icon:'😅', audio: AUDIO.arturito2, hidden:true,
        transcript:'Allo ? C\'est moi. Oui je sais, je sais… Écoutez je peux tout expliquer. La clé USB c\'était un accident, je vous jure. Je savais pas ce que c\'était. Et Sierra… Sierra elle est pas vraiment de la police. Enfin je crois. Bref. Je suis aux Bunkers del Carmel. Tout en haut. Venez. J\'ai quelque chose à vous montrer. Et… amenez de quoi boire.'},
+      {type:'instruction', label:'Destination finale', text:'Direction Bunkers del Carmel. Tout en haut. Arturito vous attend.', hidden:true},
     ]
   },
   {
     num:'06', tag:'Acte 6 — Final', title:'Le Dénouement', loc:'📍 Bunkers del Carmel',
-    unlock:'none', nextLabel:'TERMINER L\'OPÉRATION',
+    autoUnlock: true,
     blocks:[
-      {type:'narrative', text:'Vous y êtes. Tout en haut. Barcelone à vos pieds. Ouvrez l\'enveloppe 4.'},
+      {type:'narrative', text:'Vous y êtes. Tout en haut. <em>Barcelone à vos pieds.</em>'},
       {type:'enigme', text:'Félicitations. Vous avez retrouvé Arturito, récupéré la clé, et survécu à Sierra. Ce soir, l\'opération se poursuit — mais le dress code change. Masques autorisés. Faux billets bienvenus. La nuit commence.'},
       {type:'instruction', label:'Protocole final', text:'Photo de groupe obligatoire. Masques Dalí. Faux billets. Vue sur Barcelone. C\'est un ordre du Professeur.'},
     ]
   }
 ];
 
+// ── STATE ──
 let currentActe = 0;
 
 function startGame() {
@@ -322,18 +308,17 @@ function showScreen(id) {
   document.getElementById('screen-' + id).classList.add('active');
 }
 
+// ── RENDER ──
 function renderActe(idx) {
   currentActe = idx;
   const acte = ACTES[idx];
   const content = document.getElementById('game-content');
   content.scrollTop = 0;
 
-  // Progress
   document.getElementById('progress-dots').innerHTML =
     ACTES.map((_, i) => `<div class="prog-dot ${i < idx ? 'done' : i === idx ? 'active' : ''}"></div>`).join('');
-  document.getElementById('step-label').textContent = `ACTE ${idx+1}/${ACTES.length}`;
+  document.getElementById('step-label').textContent = `ACTE ${idx+1} / ${ACTES.length}`;
 
-  // Build HTML
   let html = `<div class="acte-banner" data-num="${acte.num}">
     <div class="acte-tag">${acte.tag}</div>
     <div class="acte-title">${acte.title}</div>
@@ -341,25 +326,22 @@ function renderActe(idx) {
   </div><div class="blocks">`;
 
   acte.blocks.forEach((block, bi) => {
-    html += buildBlock(block, bi);
+    const hiddenClass = block.hidden ? 'block-hidden' : '';
+    html += `<div class="${hiddenClass}" id="blk-${bi}" style="animation-delay:${bi*0.07}s">` + buildBlock(block, bi) + `</div>`;
   });
   html += '</div>';
   content.innerHTML = html;
 
-  // Animate
-  content.querySelectorAll('.block').forEach((b, i) => { b.style.animationDelay = (i * 0.07) + 's'; });
-
   // Enter key on code fields
   content.querySelectorAll('.code-field').forEach(input => {
     input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') input.closest('.block-code-input').querySelector('.code-submit').click();
+      if (e.key === 'Enter') input.closest('[data-bi]').querySelector('.code-submit').click();
     });
   });
 
   // Next button
   const btn = document.getElementById('btn-next');
-  document.getElementById('btn-next-label').textContent = acte.nextLabel;
-  if (acte.unlock === 'none') {
+  if (acte.autoUnlock) {
     btn.disabled = false;
     btn.classList.add('unlocked');
   } else {
@@ -370,12 +352,12 @@ function renderActe(idx) {
 
 function buildBlock(block, bi) {
   switch(block.type) {
+
     case 'narrative':
       return `<div class="block block-narrative">${block.text}</div>`;
 
-    case 'vocal': {
-      const lockedClass = block.locked ? 'locked' : '';
-      return `<div class="block block-vocal ${lockedClass}" id="vocal-${bi}">
+    case 'vocal':
+      return `<div class="block block-vocal">
         <div class="vocal-header">
           <div class="vocal-icon">${block.icon}</div>
           <div>
@@ -384,12 +366,11 @@ function buildBlock(block, bi) {
           </div>
         </div>
         <div class="vocal-player">
-          <audio class="audio-elem" controls preload="none" src="${block.audio}"></audio>
-          <button class="vocal-transcript-btn" onclick="toggleTranscript(${bi})">LIRE LA TRANSCRIPTION</button>
+          <audio controls preload="none" src="${block.audio}"></audio>
+          <button class="vocal-transcript-btn" onclick="toggleTranscript(this)">LIRE LA TRANSCRIPTION</button>
         </div>
-        <div class="vocal-transcript" id="transcript-${bi}">${block.transcript}</div>
+        <div class="vocal-transcript">${block.transcript}</div>
       </div>`;
-    }
 
     case 'enigme':
       return `<div class="block block-enigme">
@@ -412,79 +393,50 @@ function buildBlock(block, bi) {
         </div>
       </div>`;
 
+    case 'photo':
+      return `<div class="block block-media">
+        <div class="media-label">${block.caption}</div>
+        <img class="media-img" src="${block.src}" alt="${block.caption}"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="media-error">Image non disponible — vérifiez votre connexion</div>
+      </div>`;
+
     case 'code-input':
-      return `<div class="block block-code-input"
-        data-bi="${bi}"
-        data-answer="${block.answer}"
-        data-ok="${block.feedback_ok}"
-        data-ko="${block.feedback_ko}">
+      return `<div class="block block-code-input" data-bi="${bi}">
         <div class="code-label">${block.label}</div>
         <div class="code-field-wrap">
           <input class="code-field" id="code-${bi}" type="text" placeholder="${block.placeholder}"
             maxlength="10" autocomplete="off" autocorrect="off" spellcheck="false"
             oninput="this.value=this.value.toUpperCase()">
-          <button class="code-submit" onclick="submitCodeFromBtn(this)">OK</button>
+          <button class="code-submit" onclick="submitCode(this,'${block.answer}','${block.feedback_ok}','${block.feedback_ko}')">OK</button>
         </div>
         <div class="code-feedback" id="code-fb-${bi}"></div>
-      </div>`;
-
-    case 'photo':
-      return `<div class="block block-media">
-        <div class="media-label">${block.caption}</div>
-        <img src="${eval(block.src)}" alt="${block.caption}" class="media-img" onerror="this.parentElement.querySelector('.media-error').style.display='block';this.style.display='none'">
-        <div class="media-error" style="display:none;padding:12px 16px;font-family:'DM Mono',monospace;font-size:11px;color:var(--red);">Image non disponible — vérifiez votre connexion</div>
-      </div>`;
-
-    case 'video':
-      return `<div class="block block-media">
-        <div class="media-label">${block.caption}</div>
-        <video src="${eval(block.src)}" class="media-img" controls playsinline onerror="this.parentElement.querySelector('.media-error').style.display='block';this.style.display='none'"></video>
-        <div class="media-error" style="display:none;padding:12px 16px;font-family:'DM Mono',monospace;font-size:11px;color:var(--red);">Vidéo non disponible — vérifiez votre connexion</div>
       </div>`;
 
     default: return '';
   }
 }
 
-function toggleTranscript(bi) {
-  const t = document.getElementById('transcript-' + bi);
-  const btn = t.previousElementSibling;
-  t.classList.toggle('open');
-  btn.textContent = t.classList.contains('open') ? 'FERMER LA TRANSCRIPTION' : 'LIRE LA TRANSCRIPTION';
-}
-
-function submitCodeFromBtn(btn) {
-  const block = btn.closest('.block-code-input');
-  const bi = block.dataset.bi;
-  const answer = block.dataset.answer;
-  const feedbackOk = block.dataset.ok;
-  const feedbackKo = block.dataset.ko;
-  submitCode(bi, answer, feedbackOk, feedbackKo);
-}
-
-function submitCode(bi, answer, feedbackOk, feedbackKo) {
+// ── LOGIC ──
+function submitCode(btn, answer, feedbackOk, feedbackKo) {
+  const wrap = btn.closest('[data-bi]');
+  const bi = parseInt(wrap.dataset.bi);
   const input = document.getElementById('code-' + bi);
   const fb = document.getElementById('code-fb-' + bi);
   const val = input.value.trim().toUpperCase();
 
   if (val === answer.toUpperCase()) {
-    input.classList.remove('error');
     input.classList.add('success');
+    input.disabled = true;
+    btn.disabled = true;
     fb.className = 'code-feedback ok';
     fb.textContent = '✓ ' + feedbackOk;
 
-    // Unlock any locked vocals in the acte
-    document.querySelectorAll('.block-vocal.locked').forEach(v => v.classList.remove('locked'));
-
-    // Show success popup then unlock next button
-    setTimeout(() => {
-      document.getElementById('success-text').textContent = feedbackOk;
-      document.getElementById('success-overlay').classList.add('show');
-    }, 400);
+    // Reveal all hidden blocks that come after this code block
+    setTimeout(() => revealHiddenBlocks(bi), 300);
 
   } else {
     input.classList.add('error');
-    input.classList.remove('success');
     fb.className = 'code-feedback ko';
     fb.textContent = '✗ ' + feedbackKo;
     input.value = '';
@@ -492,15 +444,39 @@ function submitCode(bi, answer, feedbackOk, feedbackKo) {
   }
 }
 
-function closeSuccess() {
-  document.getElementById('success-overlay').classList.remove('show');
-  // Unlock next button
-  const btn = document.getElementById('btn-next');
-  btn.disabled = false;
-  btn.classList.add('unlocked');
-  // Scroll down
-  const content = document.getElementById('game-content');
-  setTimeout(() => content.scrollTo({ top: content.scrollHeight, behavior: 'smooth' }), 100);
+function revealHiddenBlocks(codeBlockIdx) {
+  const acte = ACTES[currentActe];
+  let delay = 0;
+
+  // Reveal all hidden blocks after this code-input
+  for (let i = codeBlockIdx + 1; i < acte.blocks.length; i++) {
+    if (acte.blocks[i].hidden) {
+      const el = document.getElementById('blk-' + i);
+      if (el) {
+        setTimeout(() => {
+          el.classList.add('revealed');
+          el.style.animationDelay = '0s';
+        }, delay);
+        delay += 150;
+      }
+    }
+  }
+
+  // Unlock next button after all reveals
+  setTimeout(() => {
+    const btn = document.getElementById('btn-next');
+    btn.disabled = false;
+    btn.classList.add('unlocked');
+    // Scroll to bottom
+    const content = document.getElementById('game-content');
+    content.scrollTo({ top: content.scrollHeight, behavior: 'smooth' });
+  }, delay + 200);
+}
+
+function toggleTranscript(btn) {
+  const t = btn.nextElementSibling;
+  t.classList.toggle('open');
+  btn.textContent = t.classList.contains('open') ? 'FERMER LA TRANSCRIPTION' : 'LIRE LA TRANSCRIPTION';
 }
 
 function nextActe() {
