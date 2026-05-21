@@ -57,6 +57,8 @@ body::after {
 #screen-game { background: var(--bg); overflow: hidden; }
 
 .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); flex-shrink: 0; z-index: 10; }
+.topbar-back { background: none; border: 1px solid var(--border); color: var(--text-dim); font-family: 'Bebas Neue', sans-serif; font-size: 18px; padding: 4px 10px; border-radius: 2px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+.topbar-back:active { color: var(--text); border-color: var(--text-dim); }
 .topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.08em; color: var(--red); }
 .topbar-step { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; }
 .topbar-progress { display: flex; gap: 4px; align-items: center; }
@@ -72,6 +74,7 @@ body::after {
 .acte-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--red); margin-bottom: 6px; }
 .acte-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 0.04em; color: var(--paper); line-height: 1; margin-bottom: 6px; }
 .acte-loc { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gold); letter-spacing: 0.08em; }
+.acte-loc.hidden-loc { color: transparent; background: rgba(245,239,224,0.08); border-radius: 2px; user-select: none; pointer-events: none; }
 
 /* blocks */
 .blocks { padding: 20px 20px 40px; display: flex; flex-direction: column; gap: 16px; }
@@ -173,6 +176,7 @@ audio { width: 100%; border-radius: 2px; }
 
   <div id="screen-game" class="screen">
     <div class="topbar">
+      <button class="topbar-back" id="btn-back" onclick="goBack()" style="display:none">←</button>
       <div class="topbar-logo">CDP</div>
       <div class="topbar-progress" id="progress-dots"></div>
       <div class="topbar-step" id="step-label">ACTE 1 / 6</div>
@@ -211,6 +215,7 @@ const IMG = {
   consigneFermee:  BASE + 'photo-consigne-fermee.jpg',
   consigneOuverte: BASE + 'photo-consigne-ouverte.jpg',
   batllo:          BASE + 'photo-batllo.jpg',
+  enigmeBatllo:    BASE + 'photo-enigme-batllo.jpg',
   sagrada:         BASE + 'photo-sagrada.jpg',
 };
 
@@ -263,7 +268,7 @@ const ACTES = [
     blocks:[
       {type:'narrative', text:'Vous êtes devant la façade. Le dragon vous regarde.'},
       {type:'photo', caption:'La façade — observez bien', src: IMG.batllo},
-      {type:'enigme', text:'Arturito a sécurisé la clé dans une consigne. Le code est caché dans cette façade. Comptez les colonnes. Comptez les balcons. Additionnez. Divisez par deux. Envoyez le résultat au Professeur — sans virgule.'},
+      {type:'photo', caption:'Message d\'Arturito — déchiffré', src: IMG.enigmeBatllo},
       {type:'code-input', label:'Code de la consigne', placeholder:'···', answer:'115',
        feedback_ok:'Consigne ouverte. La clé USB est récupérée.', feedback_ko:'Mauvais code. Comptez encore.'},
       {type:'photo', caption:'Consigne ouverte — clé USB récupérée', src: IMG.consigneOuverte, hidden:true},
@@ -319,10 +324,11 @@ function renderActe(idx) {
     ACTES.map((_, i) => `<div class="prog-dot ${i < idx ? 'done' : i === idx ? 'active' : ''}"></div>`).join('');
   document.getElementById('step-label').textContent = `ACTE ${idx+1} / ${ACTES.length}`;
 
+  const locHidden = !acte.autoUnlock;
   let html = `<div class="acte-banner" data-num="${acte.num}">
     <div class="acte-tag">${acte.tag}</div>
     <div class="acte-title">${acte.title}</div>
-    <div class="acte-loc">${acte.loc}</div>
+    <div class="acte-loc${locHidden ? ' hidden-loc' : ''}" id="acte-loc">${acte.loc}</div>
   </div><div class="blocks">`;
 
   acte.blocks.forEach((block, bi) => {
@@ -338,6 +344,10 @@ function renderActe(idx) {
       if (e.key === 'Enter') { e.preventDefault(); input.closest('[data-bi]').querySelector('.code-submit').click(); }
     });
   });
+
+  // Back button — show only from acte 2 onwards
+  const backBtn = document.getElementById('btn-back');
+  backBtn.style.display = idx > 0 ? 'block' : 'none';
 
   // Next button
   const btn = document.getElementById('btn-next');
@@ -454,6 +464,10 @@ function revealHiddenBlocks(codeBlockIdx) {
   const acte = ACTES[currentActe];
   let delay = 0;
 
+  // Reveal location
+  const loc = document.getElementById('acte-loc');
+  if (loc) { setTimeout(() => loc.classList.remove('hidden-loc'), 0); }
+
   // Reveal all hidden blocks after this code-input
   for (let i = codeBlockIdx + 1; i < acte.blocks.length; i++) {
     if (acte.blocks[i].hidden) {
@@ -480,9 +494,14 @@ function revealHiddenBlocks(codeBlockIdx) {
 }
 
 function toggleTranscript(btn) {
-  const t = btn.nextElementSibling;
+  const player = btn.closest('.vocal-player');
+  const t = player.closest('.block-vocal').querySelector('.vocal-transcript');
   t.classList.toggle('open');
   btn.textContent = t.classList.contains('open') ? 'FERMER LA TRANSCRIPTION' : 'LIRE LA TRANSCRIPTION';
+}
+
+function goBack() {
+  if (currentActe > 0) renderActe(currentActe - 1);
 }
 
 function nextActe() {
