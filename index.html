@@ -16,8 +16,6 @@
   --bg2: #120c07;
   --bg3: #1c1208;
   --paper: #f5efe0;
-  --paper2: #ede3cc;
-  --ink: #1a1208;
   --text: rgba(245,239,224,0.9);
   --text-dim: rgba(245,239,224,0.45);
   --text-faint: rgba(245,239,224,0.2);
@@ -26,640 +24,141 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Crimson Pro', Georgia, serif; overflow: hidden; }
 
-html, body {
-  height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Crimson Pro', Georgia, serif;
-  overflow: hidden;
-}
-
-/* NOISE TEXTURE */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 999;
-  opacity: 0.4;
-}
-
-/* SCANLINES */
 body::after {
   content: '';
   position: fixed; inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.03) 2px,
-    rgba(0,0,0,0.03) 4px
-  );
-  pointer-events: none;
-  z-index: 998;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events: none; z-index: 998;
 }
 
-/* APP SHELL */
-#app {
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
+#app { height: 100dvh; display: flex; flex-direction: column; position: relative; }
 
-/* SCREENS */
-.screen {
-  display: none;
-  flex-direction: column;
-  height: 100%;
-  animation: fadeIn 0.5s ease;
-}
+.screen { display: none; flex-direction: column; height: 100%; animation: fadeIn 0.4s ease; }
 .screen.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ========================
-   SPLASH SCREEN
-======================== */
+/* ── SPLASH ── */
 #screen-splash {
-  align-items: center;
-  justify-content: center;
-  background: var(--bg);
-  position: relative;
-  overflow: hidden;
+  align-items: center; justify-content: center;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(204,26,26,0.13) 0%, transparent 70%), var(--bg);
+  overflow: hidden; position: relative;
 }
-
-.splash-bg {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(204,26,26,0.12) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(201,168,76,0.05) 0%, transparent 60%);
-}
-
 .splash-lines {
   position: absolute; inset: 0;
-  background: repeating-linear-gradient(
-    -45deg,
-    transparent, transparent 40px,
-    rgba(204,26,26,0.03) 40px, rgba(204,26,26,0.03) 41px
-  );
+  background: repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(204,26,26,0.03) 40px, rgba(204,26,26,0.03) 41px);
 }
-
-.splash-inner {
-  position: relative;
-  text-align: center;
-  padding: 40px 32px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-}
-
-.splash-eyebrow {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--red);
-  margin-bottom: 24px;
-  animation: fadeIn 0.8s ease 0.2s both;
-}
-
-.splash-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(52px, 16vw, 88px);
-  line-height: 0.9;
-  letter-spacing: 0.02em;
-  color: var(--paper);
-  text-shadow: 0 0 60px rgba(204,26,26,0.3);
-  margin-bottom: 6px;
-  animation: fadeIn 0.8s ease 0.35s both;
-}
-
-.splash-title span {
-  color: var(--red);
-  display: block;
-}
-
-.splash-sub {
-  font-size: 18px;
-  color: var(--text-dim);
-  font-style: italic;
-  margin-bottom: 48px;
-  animation: fadeIn 0.8s ease 0.5s both;
-}
-
-.splash-deco {
-  width: 60px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--red), transparent);
-  margin: 0 auto 48px;
-  animation: fadeIn 0.8s ease 0.6s both;
-}
-
-.btn-primary {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
-  letter-spacing: 0.12em;
-  color: var(--paper);
-  background: var(--red);
-  border: none;
-  padding: 18px 48px;
-  border-radius: 2px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.2s;
-  animation: fadeIn 0.8s ease 0.7s both;
-  box-shadow: 0 0 40px rgba(204,26,26,0.3);
-}
-.btn-primary::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-}
+.splash-inner { position: relative; text-align: center; padding: 40px 32px; display: flex; flex-direction: column; align-items: center; }
+.splash-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); margin-bottom: 24px; animation: fadeIn 0.8s ease 0.2s both; }
+.splash-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 16vw, 88px); line-height: 0.9; color: var(--paper); text-shadow: 0 0 60px rgba(204,26,26,0.3); margin-bottom: 6px; animation: fadeIn 0.8s ease 0.35s both; }
+.splash-title span { color: var(--red); display: block; }
+.splash-sub { font-size: 18px; color: var(--text-dim); font-style: italic; margin-bottom: 48px; animation: fadeIn 0.8s ease 0.5s both; }
+.splash-deco { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--red), transparent); margin: 0 auto 48px; animation: fadeIn 0.8s ease 0.6s both; }
+.btn-primary { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.12em; color: var(--paper); background: var(--red); border: none; padding: 18px 48px; border-radius: 2px; cursor: pointer; animation: fadeIn 0.8s ease 0.7s both; box-shadow: 0 0 40px rgba(204,26,26,0.3); transition: all 0.2s; }
 .btn-primary:active { transform: scale(0.97); background: var(--red2); }
+.splash-disclaimer { margin-top: 24px; font-size: 13px; color: var(--text-faint); font-style: italic; animation: fadeIn 0.8s ease 0.9s both; }
 
-.splash-disclaimer {
-  margin-top: 24px;
-  font-size: 13px;
-  color: var(--text-faint);
-  font-style: italic;
-  animation: fadeIn 0.8s ease 0.9s both;
-}
+/* ── GAME ── */
+#screen-game { background: var(--bg); overflow: hidden; }
 
-/* ========================
-   GAME SCREEN
-======================== */
-#screen-game {
-  flex-direction: column;
-  background: var(--bg);
-  overflow: hidden;
-}
-
-/* TOP BAR */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-  position: relative;
-  z-index: 10;
-}
-
-.topbar-logo {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
-  letter-spacing: 0.08em;
-  color: var(--red);
-}
-
-.topbar-step {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--text-dim);
-  letter-spacing: 0.08em;
-}
-
-.topbar-progress {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-.prog-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--border);
-  transition: all 0.3s;
-}
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); flex-shrink: 0; z-index: 10; }
+.topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.08em; color: var(--red); }
+.topbar-step { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; }
+.topbar-progress { display: flex; gap: 4px; align-items: center; }
+.prog-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: all 0.3s; }
 .prog-dot.done { background: var(--red2); }
 .prog-dot.active { background: var(--red); box-shadow: 0 0 6px var(--red); width: 14px; border-radius: 3px; }
 
-/* CONTENT AREA */
-.content {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-}
+.content { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
 
-/* ACTE HEADER */
-.acte-banner {
-  position: relative;
-  padding: 32px 24px 24px;
-  background: linear-gradient(180deg, var(--bg3) 0%, var(--bg) 100%);
-  border-bottom: 1px solid var(--border);
-  overflow: hidden;
-}
-.acte-banner::before {
-  content: attr(data-num);
-  position: absolute;
-  right: -10px; top: -20px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 120px;
-  color: rgba(204,26,26,0.06);
-  line-height: 1;
-  pointer-events: none;
-  letter-spacing: -4px;
-}
-.acte-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--red);
-  margin-bottom: 6px;
-}
-.acte-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 36px;
-  letter-spacing: 0.04em;
-  color: var(--paper);
-  line-height: 1;
-  margin-bottom: 6px;
-}
-.acte-loc {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--gold);
-  letter-spacing: 0.08em;
-}
+.acte-banner { position: relative; padding: 32px 24px 24px; background: linear-gradient(180deg, var(--bg3) 0%, var(--bg) 100%); border-bottom: 1px solid var(--border); overflow: hidden; }
+.acte-banner::before { content: attr(data-num); position: absolute; right: -10px; top: -20px; font-family: 'Bebas Neue', sans-serif; font-size: 120px; color: rgba(204,26,26,0.06); line-height: 1; pointer-events: none; }
+.acte-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--red); margin-bottom: 6px; }
+.acte-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 0.04em; color: var(--paper); line-height: 1; margin-bottom: 6px; }
+.acte-loc { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gold); letter-spacing: 0.08em; }
 
-/* BLOCKS */
-.blocks {
-  padding: 20px 20px 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+.blocks { padding: 20px 20px 40px; display: flex; flex-direction: column; gap: 16px; }
+.block { border-radius: 3px; overflow: hidden; animation: blockIn 0.4s ease both; }
+@keyframes blockIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-.block {
-  border-radius: 3px;
-  overflow: hidden;
-  animation: blockIn 0.4s ease both;
-}
-@keyframes blockIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* NARRATIVE BLOCK */
-.block-narrative {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  padding: 18px 20px;
-  font-size: 16px;
-  line-height: 1.75;
-  color: var(--text);
-}
+/* narrative */
+.block-narrative { background: var(--bg2); border: 1px solid var(--border); padding: 18px 20px; font-size: 16px; line-height: 1.75; }
 .block-narrative em { color: var(--gold); font-style: italic; }
 
-/* VOCAL BLOCK */
-.block-vocal {
-  background: #0d0404;
-  border: 1px solid var(--border2);
-  position: relative;
-  overflow: hidden;
-}
-.block-vocal::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, var(--red2), var(--red), var(--red2));
-}
-.vocal-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 18px 12px;
-  border-bottom: 1px solid rgba(204,26,26,0.15);
-}
-.vocal-icon {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: var(--red);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 0 16px rgba(204,26,26,0.4);
-}
-.vocal-icon svg { width: 16px; height: 16px; fill: white; }
-.vocal-from {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--text-dim);
-  letter-spacing: 0.08em;
-}
-.vocal-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--paper);
-}
-.vocal-play-btn {
-  margin-left: auto;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--red);
-  background: rgba(204,26,26,0.1);
-  border: 1px solid var(--border2);
-  padding: 6px 12px;
-  border-radius: 2px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.vocal-play-btn:active { background: rgba(204,26,26,0.25); }
-.vocal-body {
-  padding: 16px 18px;
-  font-size: 15px;
-  font-style: italic;
-  color: rgba(245,239,224,0.7);
-  line-height: 1.8;
-  display: none;
-}
-.vocal-body.revealed { display: block; animation: fadeIn 0.4s ease; }
-.vocal-waveform {
-  padding: 0 18px 16px;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  height: 32px;
-}
-.wave-bar {
-  flex: 1;
-  background: rgba(204,26,26,0.25);
-  border-radius: 1px;
-  transition: height 0.1s;
-}
+/* vocal */
+.block-vocal { background: #0d0404; border: 1px solid var(--border2); position: relative; }
+.block-vocal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--red2), var(--red), var(--red2)); }
+.block-vocal.locked { opacity: 0.35; pointer-events: none; }
+.vocal-header { display: flex; align-items: center; gap: 12px; padding: 16px 18px 12px; border-bottom: 1px solid rgba(204,26,26,0.15); }
+.vocal-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 0 16px rgba(204,26,26,0.4); font-size: 16px; }
+.vocal-from { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; }
+.vocal-name { font-size: 15px; font-weight: 600; color: var(--paper); }
+.vocal-player { padding: 14px 18px 16px; display: flex; flex-direction: column; gap: 10px; }
+.audio-elem { width: 100%; outline: none; border-radius: 2px; }
+audio::-webkit-media-controls-panel { background: #1a0808; }
+.vocal-transcript-btn { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); background: none; border: 1px solid var(--border); padding: 6px 12px; border-radius: 2px; cursor: pointer; align-self: flex-start; transition: all 0.2s; }
+.vocal-transcript-btn:active { color: var(--text); border-color: var(--text-dim); }
+.vocal-transcript { display: none; padding: 12px 16px; background: rgba(0,0,0,0.3); font-size: 14px; font-style: italic; color: rgba(245,239,224,0.6); line-height: 1.8; border-top: 1px solid var(--border); }
+.vocal-transcript.open { display: block; animation: fadeIn 0.3s ease; }
 
-/* IMAGE BLOCK */
-.block-image {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
-.block-image img {
-  width: 100%;
-  display: block;
-  filter: brightness(0.85) contrast(1.1);
-}
-.block-image-caption {
-  padding: 10px 16px;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--text-dim);
-  letter-spacing: 0.06em;
-}
+/* enigme */
+.block-enigme { background: var(--bg2); border: 1px solid var(--gold); border-left: 3px solid var(--gold); padding: 18px 20px; }
+.enigme-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.enigme-text { font-size: 16px; line-height: 1.75; font-style: italic; }
 
-/* ENIGME BLOCK */
-.block-enigme {
-  background: var(--bg2);
-  border: 1px solid var(--gold);
-  border-left: 3px solid var(--gold);
-  padding: 18px 20px;
-  position: relative;
-}
-.enigme-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 10px;
-}
-.enigme-text {
-  font-size: 16px;
-  line-height: 1.75;
-  color: var(--text);
-  font-style: italic;
-}
+/* instruction */
+.block-instruction { background: rgba(204,26,26,0.06); border: 1px solid var(--border2); border-left: 3px solid var(--red); padding: 16px 18px; }
+.instruction-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--red); margin-bottom: 8px; }
+.instruction-text { font-size: 15px; line-height: 1.7; }
 
-/* INSTRUCTION BLOCK */
-.block-instruction {
-  background: rgba(204,26,26,0.06);
-  border: 1px solid var(--border2);
-  border-left: 3px solid var(--red);
-  padding: 16px 18px;
-}
-.instruction-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--red);
-  margin-bottom: 8px;
-}
-.instruction-text {
-  font-size: 15px;
-  color: var(--text);
-  line-height: 1.7;
-}
-
-/* CODE INPUT */
-.block-code-input {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  padding: 20px;
-}
-.code-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-bottom: 14px;
-}
-.code-field-wrap {
-  display: flex;
-  gap: 10px;
-}
-.code-field {
-  flex: 1;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  padding: 14px 16px;
-  font-family: 'DM Mono', monospace;
-  font-size: 24px;
-  color: var(--paper);
-  letter-spacing: 0.2em;
-  text-align: center;
-  outline: none;
-  transition: border-color 0.2s;
-  -webkit-appearance: none;
-}
-.code-field:focus { border-color: var(--red); }
-.code-field.error { border-color: var(--red); animation: shake 0.3s ease; }
-.code-field.success { border-color: #2a8a2a; color: #6fcf6f; }
-@keyframes shake {
-  0%,100% { transform: translateX(0); }
-  25% { transform: translateX(-6px); }
-  75% { transform: translateX(6px); }
-}
-.code-submit {
-  background: var(--red);
-  color: var(--paper);
-  border: none;
-  padding: 14px 20px;
-  border-radius: 2px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 18px;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-.code-submit:active { background: var(--red2); transform: scale(0.97); }
-.code-feedback {
-  margin-top: 10px;
-  font-size: 14px;
-  min-height: 20px;
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  letter-spacing: 0.06em;
-}
-.code-feedback.ok { color: #6fcf6f; }
-.code-feedback.ko { color: var(--red); }
-
-/* WHATSAPP CTA */
-.block-whatsapp {
-  background: rgba(37,211,102,0.06);
-  border: 1px solid rgba(37,211,102,0.2);
-  padding: 16px 18px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.wa-icon {
-  width: 36px; height: 36px;
-  background: #25d366;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.wa-icon svg { width: 20px; height: 20px; fill: white; }
+/* whatsapp */
+.block-whatsapp { background: rgba(37,211,102,0.06); border: 1px solid rgba(37,211,102,0.2); padding: 16px 18px; display: flex; align-items: center; gap: 14px; }
+.wa-icon { width: 36px; height: 36px; background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 20px; }
 .wa-text { flex: 1; }
 .wa-title { font-size: 14px; font-weight: 600; color: var(--paper); margin-bottom: 2px; }
 .wa-sub { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
 
-/* NEXT BUTTON */
-.btn-next-wrap {
-  padding: 0 20px 8px;
-  flex-shrink: 0;
-}
-.btn-next {
-  width: 100%;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  padding: 16px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
-  letter-spacing: 0.1em;
-  color: var(--text-dim);
-  cursor: pointer;
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-.btn-next.unlocked {
-  background: var(--red);
-  color: var(--paper);
-  border-color: var(--red);
-  box-shadow: 0 0 30px rgba(204,26,26,0.25);
-}
+/* code input */
+.block-code-input { background: var(--bg2); border: 1px solid var(--border); padding: 20px; }
+.code-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 14px; }
+.code-field-wrap { display: flex; gap: 10px; }
+.code-field { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 2px; padding: 14px 16px; font-family: 'DM Mono', monospace; font-size: 22px; color: var(--paper); letter-spacing: 0.2em; text-align: center; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+.code-field:focus { border-color: var(--red); }
+.code-field.error { border-color: var(--red); animation: shake 0.3s ease; }
+.code-field.success { border-color: #2a8a2a; color: #6fcf6f; }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.code-submit { background: var(--red); color: var(--paper); border: none; padding: 14px 20px; border-radius: 2px; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s; }
+.code-submit:active { background: var(--red2); transform: scale(0.97); }
+.code-feedback { margin-top: 10px; min-height: 20px; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.06em; }
+.code-feedback.ok { color: #6fcf6f; }
+.code-feedback.ko { color: var(--red); }
+
+/* next button */
+.btn-next-wrap { padding: 12px 20px; flex-shrink: 0; background: var(--bg); border-top: 1px solid var(--border); }
+.btn-next { width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 2px; padding: 16px; font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.1em; color: var(--text-dim); cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-next.unlocked { background: var(--red); color: var(--paper); border-color: var(--red); box-shadow: 0 0 30px rgba(204,26,26,0.25); }
 .btn-next.unlocked:active { transform: scale(0.98); }
-.btn-next svg { width: 16px; height: 16px; }
+.bottom-safe { height: env(safe-area-inset-bottom, 8px); background: var(--bg); flex-shrink: 0; }
 
-/* BOTTOM NAV */
-.bottom-safe {
-  height: 12px;
-  background: var(--bg);
-  flex-shrink: 0;
-}
-
-/* SUCCESS OVERLAY */
-.success-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.85);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 100;
-  display: none;
-  flex-direction: column;
-  gap: 16px;
-  padding: 40px;
-  text-align: center;
-}
+/* success overlay */
+.success-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 40px; text-align: center; z-index: 100; }
 .success-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
-.success-icon {
-  width: 64px; height: 64px;
-  border-radius: 50%;
-  background: rgba(47,204,47,0.15);
-  border: 2px solid #2fcc2f;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
-  animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
-}
-@keyframes popIn {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-.success-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 32px;
-  color: var(--paper);
-  letter-spacing: 0.06em;
-}
+.success-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(47,204,47,0.15); border: 2px solid #2fcc2f; display: flex; align-items: center; justify-content: center; font-size: 28px; animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.success-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--paper); letter-spacing: 0.06em; }
 .success-text { font-size: 16px; color: var(--text-dim); font-style: italic; line-height: 1.7; }
-.success-close {
-  margin-top: 8px;
-  background: var(--red);
-  color: var(--paper);
-  border: none;
-  padding: 14px 40px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
-  letter-spacing: 0.1em;
-  border-radius: 2px;
-  cursor: pointer;
-}
+.success-close { margin-top: 8px; background: var(--red); color: var(--paper); border: none; padding: 14px 40px; font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.1em; border-radius: 2px; cursor: pointer; }
 
-/* FINAL SCREEN */
-#screen-final {
-  align-items: center;
-  justify-content: center;
-  background: var(--bg);
-  text-align: center;
-  padding: 40px 32px;
-  overflow-y: auto;
-}
+/* final */
+#screen-final { align-items: center; justify-content: center; background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(204,26,26,0.12) 0%, transparent 70%), var(--bg); text-align: center; padding: 40px 32px; overflow-y: auto; }
 .final-inner { max-width: 400px; margin: 0 auto; }
 .final-icon { font-size: 48px; margin-bottom: 20px; }
-.final-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 48px;
-  color: var(--paper);
-  line-height: 1;
-  margin-bottom: 8px;
-}
+.final-title { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: var(--paper); line-height: 1; margin-bottom: 8px; }
 .final-title span { color: var(--red); }
-.final-text { font-size: 17px; font-style: italic; color: var(--text-dim); line-height: 1.8; margin-bottom: 32px; }
-.final-bella {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 28px;
-  color: var(--gold);
-  letter-spacing: 0.1em;
-}
+.final-text { font-size: 18px; font-style: italic; color: var(--text-dim); line-height: 1.8; margin-bottom: 32px; }
+.final-bella { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gold); letter-spacing: 0.1em; }
 </style>
 </head>
 <body>
@@ -667,15 +166,14 @@ body::after {
 
   <!-- SPLASH -->
   <div id="screen-splash" class="screen active">
-    <div class="splash-bg"></div>
     <div class="splash-lines"></div>
     <div class="splash-inner">
-      <div class="splash-eyebrow">Opération confidentielle</div>
+      <div class="splash-eyebrow">Opération confidentielle — Barcelone</div>
       <div class="splash-title">La Casa<span>de Papel</span></div>
       <div class="splash-sub">L'EVG d'Arturito</div>
       <div class="splash-deco"></div>
       <button class="btn-primary" onclick="startGame()">COMMENCER L'OPÉRATION</button>
-      <div class="splash-disclaimer">Barcelone — Dossier classifié</div>
+      <div class="splash-disclaimer">Dossier classifié — Ne pas perdre cet appareil</div>
     </div>
   </div>
 
@@ -688,9 +186,9 @@ body::after {
     </div>
     <div class="content" id="game-content"></div>
     <div class="btn-next-wrap">
-      <button class="btn-next" id="btn-next" onclick="nextActe()" disabled>
+      <button class="btn-next" id="btn-next" disabled onclick="nextActe()">
         <span id="btn-next-label">ACTE SUIVANT</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <span>→</span>
       </button>
     </div>
     <div class="bottom-safe"></div>
@@ -711,111 +209,93 @@ body::after {
 <!-- SUCCESS OVERLAY -->
 <div class="success-overlay" id="success-overlay">
   <div class="success-icon">✓</div>
-  <div class="success-title" id="success-title">Code correct</div>
+  <div class="success-title">Code validé</div>
   <div class="success-text" id="success-text">Bien joué.</div>
   <button class="success-close" onclick="closeSuccess()">CONTINUER</button>
 </div>
 
 <script>
-// ========================
-// DATA — ACTES
-// ========================
+const BASE = 'https://raw.githubusercontent.com/titouan-alt/Escape-game-Barcelona/main/';
+
+const AUDIO = {
+  professeur: BASE + 'ElevenLabs_2026-05-19T19_17_24_Edward - British, Dark, Seductive, Low_pvc_sp87_s78_sb79_se38_b_m2.mp3',
+  sierra:     BASE + 'ElevenLabs_2026-05-19T19_32_54_Caty - Droll, Wry and Dry_pvc_sp100_s50_sb75_se0_b_m2.mp3',
+  arturito1:  BASE + 'ElevenLabs_2026-05-19T19_21_46_Martin Osborne - Polished and Intense_pvc_sp114_s30_sb75_se49_b_m2.mp3',
+  arturito2:  BASE + 'ElevenLabs_2026-05-19T19_34_04_Martin Osborne - Polished and Intense_pvc_sp114_s30_sb75_se49_b_m2.mp3',
+};
+
+// unlock = 'none' → bouton débloqué dès le départ
+// unlock = 'code' → bouton débloqué par code correct
+// unlock = 'photo' → bouton débloqué par code MJ après photo WhatsApp
 const ACTES = [
   {
-    num: "01",
-    tag: "Acte 1",
-    title: "Le Briefing",
-    loc: "📍 Arc de Triomf",
-    blocks: [
-      { type: "narrative", text: "L'opération commence. Vous avez reçu les enveloppes. Prenez vos cartes de rôle. Ne perdez pas les faux billets. Et surtout — <em>ne perdez pas Arturito.</em>" },
-      { type: "vocal", from: "Message chiffré", name: "Le Professeur", text: "Bella ciao. Si vous entendez ce message, c'est que l'opération a commencé. Arturito a disparu depuis hier soir. Il nous a laissé une seule piste — une photo prise dans le Barri Gòtic. Je vous l'envoie maintenant. Trouvez l'endroit exact. Quand vous y êtes — photo. Vous me l'envoyez. Je vous dirai si c'est le bon endroit. Faites vite. Monica arrive demain. Bella ciao." },
-      { type: "instruction", label: "Mission", text: "Attendez la photo sur WhatsApp. Rendez-vous dans le Barri Gòtic et retrouvez l'endroit exact de la photo. Envoyez votre confirmation au Professeur." },
-    ],
-    unlock: "photo", // unlocked by photo validation
-    nextLabel: "ON Y VA"
+    num:'01', tag:'Acte 1', title:'Le Briefing', loc:'📍 Arc de Triomf',
+    unlock:'none', nextLabel:'ON Y VA',
+    blocks:[
+      {type:'narrative', text:'L\'opération commence. Prenez vos cartes de rôle. Ne perdez pas les faux billets. Et surtout — <em>ne perdez pas Arturito.</em>'},
+      {type:'vocal', from:'Message chiffré', name:'Le Professeur', icon:'🎭', audio: AUDIO.professeur,
+       transcript:'Bella ciao. Si vous entendez ce message, c\'est que l\'opération a commencé. Arturito a disparu depuis hier soir. Il nous a laissé une seule piste — une photo prise dans le Barri Gòtic. Je vous l\'envoie maintenant. Trouvez l\'endroit exact. Quand vous y êtes — photo. Vous me l\'envoyez. Je vous dirai si c\'est le bon endroit. Faites vite. Monica arrive demain. Bella ciao.'},
+      {type:'instruction', label:'Mission', text:'Le Professeur va vous envoyer une photo sur WhatsApp. Rendez-vous dans le Barri Gòtic. Retrouvez l\'endroit exact. Photographiez. Envoyez au Professeur.'},
+    ]
   },
   {
-    num: "02",
-    tag: "Acte 2",
-    title: "La Piste Froide",
-    loc: "📍 Barri Gòtic — Plaça de Sant Felip Neri",
-    blocks: [
-      { type: "narrative", text: "Vous avez retrouvé l'endroit. Ces murs ont de la mémoire. Arturito s'est arrêté ici hier soir pour une raison." },
-      { type: "vocal", from: "Message reçu", name: "Arturito", text: "Allo ? C'est moi. Écoutez… j'ai fait une connerie. Pendant le dernier braquage j'ai ramassé une clé USB qui traînait. Je savais pas ce que c'était. Maintenant je sais. Et je crois que quelqu'un d'autre le sait aussi. Je suis plus en sécurité. Rejoignez-moi Plaça de Catalunya — fontaine centrale. Venez pas tous ensemble. Et… dites rien à Monica." },
-      { type: "instruction", label: "Prochaine étape", text: "Direction Plaça de Catalunya. Fontaine centrale. Une fois sur place, prenez une photo de groupe et envoyez-la au Professeur." },
-    ],
-    unlock: "photo",
-    nextLabel: "DIRECTION PLAÇA"
+    num:'02', tag:'Acte 2', title:'La Piste Froide', loc:'📍 Barri Gòtic — Plaça de Sant Felip Neri',
+    unlock:'photo', nextLabel:'DIRECTION PLAÇA DE CATALUNYA',
+    blocks:[
+      {type:'narrative', text:'Ces murs ont de la mémoire. Arturito s\'est arrêté ici hier soir. Vous avez retrouvé l\'endroit — envoyez la photo au Professeur et attendez sa réponse.'},
+      {type:'whatsapp', title:'Envoyez la photo au Professeur', sub:'Une fois validée, il vous enverra un code à entrer ici.'},
+      {type:'code-input', label:'Code de validation — reçu sur WhatsApp', placeholder:'····', answer:'FELIP', feedback_ok:'Bonne localisation. Message d\'Arturito débloqué.', feedback_ko:'Code incorrect. Vérifiez avec le Professeur.'},
+      {type:'vocal', from:'Message reçu', name:'Arturito', icon:'😰', audio: AUDIO.arturito1, locked:true,
+       transcript:'Allo ? C\'est moi. Écoutez… j\'ai fait une connerie. Pendant le dernier braquage j\'ai ramassé une clé USB qui traînait. Je savais pas ce que c\'était. Maintenant je sais. Et je crois que quelqu\'un d\'autre le sait aussi. Je suis plus en sécurité. Rejoignez-moi Plaça de Catalunya — fontaine centrale. Venez pas tous ensemble. Et… dites rien à Monica.'},
+    ]
   },
   {
-    num: "03",
-    tag: "Acte 3",
-    title: "La Police Arrive",
-    loc: "📍 Plaça de Catalunya",
-    blocks: [
-      { type: "narrative", text: "Vous êtes sur la place. Quelqu'un vous observe. Le Professeur attend votre signal." },
-      { type: "whatsapp", title: "Envoyez une photo de groupe", sub: "Fontaine centrale, Plaça de Catalunya. Le Professeur vous répondra avec un code." },
-      { type: "code-input", label: "Code reçu du Professeur", placeholder: "XXXX", answer: "SIERRA", feedback_ok: "Transmission reçue. Écoutez le message.", feedback_ko: "Code incorrect. Vérifiez avec le Professeur." },
-      { type: "vocal", from: "Appel entrant", name: "Inspectrice Sierra", text: "Ici l'inspectrice Sierra. Je sais qui vous êtes. Je sais ce que vous cherchez. La clé USB qu'Arturito a récupérée ne lui appartient pas. Elle ne vous appartient pas non plus. Mais je vais vous donner une chance de bien faire les choses. Passeig de Gràcia, numéro 43. Casa Batlló. La clé est dans une consigne. Je vous envoie une photo. Trouvez le code. Récupérez la clé avant que mes hommes ne le fassent. Vous avez une heure. … Bella ciao.", locked: true },
-      { type: "instruction", label: "Consigne", text: "Ouvrez l'enveloppe 2 uniquement quand vous êtes devant la façade de Casa Batlló." },
-    ],
-    unlock: "code",
-    nextLabel: "DIRECTION CASA BATLLÓ"
+    num:'03', tag:'Acte 3', title:'La Police Arrive', loc:'📍 Plaça de Catalunya',
+    unlock:'code', nextLabel:'DIRECTION CASA BATLLÓ',
+    blocks:[
+      {type:'narrative', text:'Vous êtes sur la place. Fontaine centrale. Quelqu\'un vous observe. Le Professeur attend votre signal.'},
+      {type:'whatsapp', title:'Photo de groupe — fontaine centrale', sub:'Envoyez-la au Professeur. Il vous répondra avec un code.'},
+      {type:'code-input', label:'Code reçu du Professeur', placeholder:'····', answer:'SIERRA', feedback_ok:'Transmission reçue. Message de Sierra débloqué.', feedback_ko:'Code incorrect. Vérifiez avec le Professeur.'},
+      {type:'vocal', from:'Appel entrant', name:'Inspectrice Sierra', icon:'🚔', audio: AUDIO.sierra, locked:true,
+       transcript:'Ici l\'inspectrice Sierra. Je sais qui vous êtes. Je sais ce que vous cherchez. La clé USB qu\'Arturito a récupérée ne lui appartient pas. Elle ne vous appartient pas non plus. Mais je vais vous donner une chance de bien faire les choses. Passeig de Gràcia, numéro 43. Casa Batlló. La clé est dans une consigne. Je vous envoie une photo. Trouvez le code. Récupérez la clé avant que mes hommes ne le fassent. Vous avez une heure. … Bella ciao.'},
+      {type:'instruction', label:'Consigne', text:'Ouvrez l\'enveloppe 2 uniquement quand vous êtes devant la façade de Casa Batlló.'},
+    ]
   },
   {
-    num: "04",
-    tag: "Acte 4",
-    title: "Le Braquage Raté",
-    loc: "📍 Casa Batlló — Passeig de Gràcia 43",
-    blocks: [
-      { type: "narrative", text: "Vous êtes devant la façade. Le dragon vous regarde. Ouvrez l'enveloppe 2." },
-      { type: "enigme", text: "Arturito n'était pas aussi stupide qu'il en avait l'air. Avant de disparaître, il a sécurisé la clé dans une consigne. Le code ? Il l'a caché dans la façade du bâtiment devant vous. Observez bien. Comptez les colonnes. Comptez les balcons. Additionnez les deux. Divisez par deux. Envoyez le résultat au Professeur — sans virgule." },
-      { type: "code-input", label: "Code de la consigne", placeholder: "000", answer: "115", feedback_ok: "Code validé. La consigne s'ouvre.", feedback_ko: "Mauvais code. Arturito dit que vous n'avez pas bien compté." },
-      { type: "narrative", text: "La vidéo de la consigne vous a été envoyée. La clé USB est récupérée. Bien joué." },
-    ],
-    unlock: "code",
-    nextLabel: "DIRECTION SAGRADA"
+    num:'04', tag:'Acte 4', title:'Le Braquage Raté', loc:'📍 Casa Batlló — Passeig de Gràcia 43',
+    unlock:'code', nextLabel:'DIRECTION SAGRADA FAMÍLIA',
+    blocks:[
+      {type:'narrative', text:'Vous êtes devant la façade. Le dragon vous regarde. La consigne attend. Ouvrez l\'enveloppe 2.'},
+      {type:'enigme', text:'Arturito n\'était pas aussi stupide qu\'il en avait l\'air. Avant de disparaître, il a sécurisé la clé dans une consigne. Le code ? Il l\'a caché dans la façade du bâtiment devant vous. Observez bien. Comptez les colonnes. Comptez les balcons. Additionnez les deux. Divisez par deux. Envoyez le résultat au Professeur — sans virgule.'},
+      {type:'code-input', label:'Code de la consigne', placeholder:'···', answer:'115', feedback_ok:'Consigne ouverte. La clé USB est récupérée.', feedback_ko:'Mauvais code. Arturito dit que vous n\'avez pas bien compté.'},
+      {type:'narrative', text:'La vidéo de la consigne vous a été envoyée par le Professeur. La clé est entre vos mains. Bien joué.'},
+    ]
   },
   {
-    num: "05",
-    tag: "Acte 5",
-    title: "Le Rendez-Vous Manqué",
-    loc: "📍 Sagrada Família",
-    blocks: [
-      { type: "narrative", text: "Arturito a été vu ici ce matin. Il a laissé une trace. Ouvrez l'enveloppe 3." },
-      { type: "instruction", label: "Mission", text: "Retrouvez l'endroit exact de la photo floue sur la façade. Quand vous y êtes — photo. Envoyez-la au Professeur." },
-      { type: "whatsapp", title: "Envoyez la photo de confirmation", sub: "Façade de la Sagrada Família. Le Professeur vous répondra avec un code." },
-      { type: "code-input", label: "Code reçu du Professeur", placeholder: "XXXX", answer: "ARTURITO", feedback_ok: "Dernier message reçu. Écoutez.", feedback_ko: "Code incorrect. Vérifiez avec le Professeur." },
-      { type: "vocal", from: "Appel entrant", name: "Arturito", text: "Allo ? C'est moi. Oui je sais, je sais… Écoutez je peux tout expliquer. La clé USB c'était un accident, je vous jure. Je savais pas ce que c'était. Et Sierra… Sierra elle est pas vraiment de la police. Enfin je crois. Bref. Je suis aux Bunkers del Carmel. Tout en haut. Venez. J'ai quelque chose à vous montrer. Et… amenez de quoi boire.", locked: true },
-    ],
-    unlock: "code",
-    nextLabel: "DIRECTION BUNKERS"
+    num:'05', tag:'Acte 5', title:'Le Rendez-Vous Manqué', loc:'📍 Sagrada Família',
+    unlock:'photo', nextLabel:'DIRECTION BUNKERS DEL CARMEL',
+    blocks:[
+      {type:'narrative', text:'Arturito a été vu ici ce matin. Il a laissé une trace sur la façade. Ouvrez l\'enveloppe 3.'},
+      {type:'instruction', label:'Mission', text:'Retrouvez l\'endroit exact de la photo floue sur la façade. Quand vous y êtes — photo. Envoyez au Professeur.'},
+      {type:'whatsapp', title:'Envoyez la photo de confirmation', sub:'Façade de la Sagrada Família. Le Professeur vous répondra avec un code.'},
+      {type:'code-input', label:'Code reçu du Professeur', placeholder:'····', answer:'GAUDI', feedback_ok:'Localisation confirmée. Dernier message d\'Arturito débloqué.', feedback_ko:'Code incorrect. Vérifiez avec le Professeur.'},
+      {type:'vocal', from:'Appel entrant', name:'Arturito', icon:'😅', audio: AUDIO.arturito2, locked:true,
+       transcript:'Allo ? C\'est moi. Oui je sais, je sais… Écoutez je peux tout expliquer. La clé USB c\'était un accident, je vous jure. Je savais pas ce que c\'était. Et Sierra… Sierra elle est pas vraiment de la police. Enfin je crois. Bref. Je suis aux Bunkers del Carmel. Tout en haut. Venez. J\'ai quelque chose à vous montrer. Et… amenez de quoi boire.'},
+    ]
   },
   {
-    num: "06",
-    tag: "Acte 6 — Final",
-    title: "Le Dénouement",
-    loc: "📍 Bunkers del Carmel",
-    blocks: [
-      { type: "narrative", text: "Vous y êtes. Tout en haut. Barcelone à vos pieds. Ouvrez l'enveloppe 4." },
-      { type: "enigme", text: "Félicitations. Vous avez survécu à Arturito, à Sierra, et à Barcelone. Ce soir, l'opération se poursuit — mais le dress code change. Masques autorisés. Faux billets bienvenus. La nuit commence." },
-      { type: "instruction", label: "Protocole final", text: "Photo de groupe obligatoire. Masques Dalí. Faux billets. Vue sur Barcelone. C'est un ordre." },
-    ],
-    unlock: "none",
-    nextLabel: "TERMINER L'OPÉRATION"
+    num:'06', tag:'Acte 6 — Final', title:'Le Dénouement', loc:'📍 Bunkers del Carmel',
+    unlock:'none', nextLabel:'TERMINER L\'OPÉRATION',
+    blocks:[
+      {type:'narrative', text:'Vous y êtes. Tout en haut. Barcelone à vos pieds. Ouvrez l\'enveloppe 4.'},
+      {type:'enigme', text:'Félicitations. Vous avez retrouvé Arturito, récupéré la clé, et survécu à Sierra. Ce soir, l\'opération se poursuit — mais le dress code change. Masques autorisés. Faux billets bienvenus. La nuit commence.'},
+      {type:'instruction', label:'Protocole final', text:'Photo de groupe obligatoire. Masques Dalí. Faux billets. Vue sur Barcelone. C\'est un ordre du Professeur.'},
+    ]
   }
 ];
 
-// ========================
-// STATE
-// ========================
 let currentActe = 0;
-let acteUnlocked = false;
-let vocalRevealed = {};
 
-// ========================
-// INIT
-// ========================
 function startGame() {
   showScreen('game');
   renderActe(0);
@@ -826,46 +306,36 @@ function showScreen(id) {
   document.getElementById('screen-' + id).classList.add('active');
 }
 
-// ========================
-// RENDER ACTE
-// ========================
 function renderActe(idx) {
   currentActe = idx;
-  acteUnlocked = false;
-  vocalRevealed = {};
-
   const acte = ACTES[idx];
   const content = document.getElementById('game-content');
   content.scrollTop = 0;
 
-  // Progress dots
-  const dots = document.getElementById('progress-dots');
-  dots.innerHTML = ACTES.map((_, i) => `<div class="prog-dot ${i < idx ? 'done' : i === idx ? 'active' : ''}"></div>`).join('');
-
+  // Progress
+  document.getElementById('progress-dots').innerHTML =
+    ACTES.map((_, i) => `<div class="prog-dot ${i < idx ? 'done' : i === idx ? 'active' : ''}"></div>`).join('');
   document.getElementById('step-label').textContent = `ACTE ${idx+1}/${ACTES.length}`;
 
-  // Render blocks
-  let html = `
-    <div class="acte-banner" data-num="${acte.num}">
-      <div class="acte-tag">${acte.tag}</div>
-      <div class="acte-title">${acte.title}</div>
-      <div class="acte-loc">${acte.loc}</div>
-    </div>
-    <div class="blocks">
-  `;
+  // Build HTML
+  let html = `<div class="acte-banner" data-num="${acte.num}">
+    <div class="acte-tag">${acte.tag}</div>
+    <div class="acte-title">${acte.title}</div>
+    <div class="acte-loc">${acte.loc}</div>
+  </div><div class="blocks">`;
 
   acte.blocks.forEach((block, bi) => {
-    html += renderBlock(block, bi, acte);
+    html += buildBlock(block, bi);
   });
-
   html += '</div>';
   content.innerHTML = html;
 
+  // Animate
+  content.querySelectorAll('.block').forEach((b, i) => { b.style.animationDelay = (i * 0.07) + 's'; });
+
   // Next button
   const btn = document.getElementById('btn-next');
-  const btnLabel = document.getElementById('btn-next-label');
-  btnLabel.textContent = acte.nextLabel;
-
+  document.getElementById('btn-next-label').textContent = acte.nextLabel;
   if (acte.unlock === 'none') {
     btn.disabled = false;
     btn.classList.add('unlocked');
@@ -873,97 +343,79 @@ function renderActe(idx) {
     btn.disabled = true;
     btn.classList.remove('unlocked');
   }
-
-  // Animate blocks
-  content.querySelectorAll('.block').forEach((b, i) => {
-    b.style.animationDelay = (i * 0.08) + 's';
-  });
 }
 
-function renderBlock(block, bi, acte) {
+function buildBlock(block, bi) {
   switch(block.type) {
     case 'narrative':
       return `<div class="block block-narrative">${block.text}</div>`;
 
-    case 'vocal':
-      const lockClass = block.locked ? 'style="opacity:0.4;pointer-events:none"' : '';
-      const waveHtml = Array.from({length: 28}, (_, i) => {
-        const h = 20 + Math.sin(i * 0.8) * 14 + Math.random() * 8;
-        return `<div class="wave-bar" style="height:${h}%"></div>`;
-      }).join('');
-      return `
-        <div class="block block-vocal" ${lockClass} id="vocal-${bi}">
-          <div class="vocal-header">
-            <div class="vocal-icon"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
-            <div>
-              <div class="vocal-from">${block.from}</div>
-              <div class="vocal-name">${block.name}</div>
-            </div>
-            <button class="vocal-play-btn" onclick="toggleVocal(${bi})">▶ ÉCOUTER</button>
+    case 'vocal': {
+      const lockedClass = block.locked ? 'locked' : '';
+      return `<div class="block block-vocal ${lockedClass}" id="vocal-${bi}">
+        <div class="vocal-header">
+          <div class="vocal-icon">${block.icon}</div>
+          <div>
+            <div class="vocal-from">${block.from}</div>
+            <div class="vocal-name">${block.name}</div>
           </div>
-          <div class="vocal-waveform">${waveHtml}</div>
-          <div class="vocal-body" id="vocal-body-${bi}">"${block.text}"</div>
-        </div>`;
+        </div>
+        <div class="vocal-player">
+          <audio class="audio-elem" controls preload="none" src="${block.audio}"></audio>
+          <button class="vocal-transcript-btn" onclick="toggleTranscript(${bi})">LIRE LA TRANSCRIPTION</button>
+        </div>
+        <div class="vocal-transcript" id="transcript-${bi}">${block.transcript}</div>
+      </div>`;
+    }
 
     case 'enigme':
-      return `
-        <div class="block block-enigme">
-          <div class="enigme-label">— Message déchiffré —</div>
-          <div class="enigme-text">${block.text}</div>
-        </div>`;
+      return `<div class="block block-enigme">
+        <div class="enigme-label">— Message déchiffré —</div>
+        <div class="enigme-text">${block.text}</div>
+      </div>`;
 
     case 'instruction':
-      return `
-        <div class="block block-instruction">
-          <div class="instruction-label">${block.label}</div>
-          <div class="instruction-text">${block.text}</div>
-        </div>`;
-
-    case 'code-input':
-      return `
-        <div class="block block-code-input">
-          <div class="code-label">${block.label}</div>
-          <div class="code-field-wrap">
-            <input class="code-field" id="code-${bi}" type="text" placeholder="${block.placeholder}" maxlength="10" autocomplete="off" autocorrect="off" spellcheck="false" oninput="this.value=this.value.toUpperCase()">
-            <button class="code-submit" onclick="checkCode(${bi}, '${block.answer}', '${block.feedback_ok}', '${block.feedback_ko}')">OK</button>
-          </div>
-          <div class="code-feedback" id="code-fb-${bi}"></div>
-        </div>`;
+      return `<div class="block block-instruction">
+        <div class="instruction-label">${block.label}</div>
+        <div class="instruction-text">${block.text}</div>
+      </div>`;
 
     case 'whatsapp':
-      return `
-        <div class="block block-whatsapp">
-          <div class="wa-icon"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div>
-          <div class="wa-text">
-            <div class="wa-title">${block.title}</div>
-            <div class="wa-sub">${block.sub}</div>
-          </div>
-        </div>`;
+      return `<div class="block block-whatsapp">
+        <div class="wa-icon">💬</div>
+        <div class="wa-text">
+          <div class="wa-title">${block.title}</div>
+          <div class="wa-sub">${block.sub}</div>
+        </div>
+      </div>`;
 
-    default:
-      return '';
+    case 'code-input':
+      return `<div class="block block-code-input">
+        <div class="code-label">${block.label}</div>
+        <div class="code-field-wrap">
+          <input class="code-field" id="code-${bi}" type="text" placeholder="${block.placeholder}"
+            maxlength="10" autocomplete="off" autocorrect="off" spellcheck="false"
+            oninput="this.value=this.value.toUpperCase()"
+            onkeydown="if(event.key==='Enter')submitCode(${bi},'${block.answer}','${block.feedback_ok}','${block.feedback_ko}')">
+          <button class="code-submit" onclick="submitCode(${bi},'${block.answer}','${block.feedback_ok}','${block.feedback_ko}')">OK</button>
+        </div>
+        <div class="code-feedback" id="code-fb-${bi}"></div>
+      </div>`;
+
+    default: return '';
   }
 }
 
-// ========================
-// INTERACTIONS
-// ========================
-function toggleVocal(bi) {
-  const body = document.getElementById(`vocal-body-${bi}`);
-  const btn = document.querySelector(`#vocal-${bi} .vocal-play-btn`);
-  if (body.classList.contains('revealed')) {
-    body.classList.remove('revealed');
-    btn.textContent = '▶ ÉCOUTER';
-  } else {
-    body.classList.add('revealed');
-    btn.textContent = '✕ FERMER';
-    vocalRevealed[bi] = true;
-  }
+function toggleTranscript(bi) {
+  const t = document.getElementById('transcript-' + bi);
+  const btn = t.previousElementSibling;
+  t.classList.toggle('open');
+  btn.textContent = t.classList.contains('open') ? 'FERMER LA TRANSCRIPTION' : 'LIRE LA TRANSCRIPTION';
 }
 
-function checkCode(bi, answer, feedbackOk, feedbackKo) {
-  const input = document.getElementById(`code-${bi}`);
-  const fb = document.getElementById(`code-fb-${bi}`);
+function submitCode(bi, answer, feedbackOk, feedbackKo) {
+  const input = document.getElementById('code-' + bi);
+  const fb = document.getElementById('code-fb-' + bi);
   const val = input.value.trim().toUpperCase();
 
   if (val === answer.toUpperCase()) {
@@ -972,71 +424,45 @@ function checkCode(bi, answer, feedbackOk, feedbackKo) {
     fb.className = 'code-feedback ok';
     fb.textContent = '✓ ' + feedbackOk;
 
-    // Unlock locked vocals if any
-    document.querySelectorAll('.block-vocal[style*="opacity"]').forEach(v => {
-      v.style.opacity = '1';
-      v.style.pointerEvents = 'auto';
-    });
+    // Unlock any locked vocals in the acte
+    document.querySelectorAll('.block-vocal.locked').forEach(v => v.classList.remove('locked'));
 
-    // Show success & unlock next
+    // Show success popup then unlock next button
     setTimeout(() => {
-      showSuccess(feedbackOk);
-      unlockNext();
-    }, 600);
+      document.getElementById('success-text').textContent = feedbackOk;
+      document.getElementById('success-overlay').classList.add('show');
+    }, 400);
+
   } else {
     input.classList.add('error');
     input.classList.remove('success');
     fb.className = 'code-feedback ko';
     fb.textContent = '✗ ' + feedbackKo;
-    setTimeout(() => { input.classList.remove('error'); }, 400);
+    input.value = '';
+    setTimeout(() => input.classList.remove('error'), 400);
   }
-}
-
-function unlockNext() {
-  acteUnlocked = true;
-  const btn = document.getElementById('btn-next');
-  btn.disabled = false;
-  btn.classList.add('unlocked');
-}
-
-function showSuccess(text) {
-  document.getElementById('success-title').textContent = 'Code validé';
-  document.getElementById('success-text').textContent = text;
-  document.getElementById('success-overlay').classList.add('show');
 }
 
 function closeSuccess() {
   document.getElementById('success-overlay').classList.remove('show');
-  // Scroll to bottom to show next button
+  // Unlock next button
+  const btn = document.getElementById('btn-next');
+  btn.disabled = false;
+  btn.classList.add('unlocked');
+  // Scroll down
   const content = document.getElementById('game-content');
-  content.scrollTo({ top: content.scrollHeight, behavior: 'smooth' });
+  setTimeout(() => content.scrollTo({ top: content.scrollHeight, behavior: 'smooth' }), 100);
 }
 
 function nextActe() {
   const btn = document.getElementById('btn-next');
   if (btn.disabled) return;
-
   if (currentActe >= ACTES.length - 1) {
     showScreen('final');
     return;
   }
-
   renderActe(currentActe + 1);
-  document.getElementById('game-content').scrollTop = 0;
 }
-
-// For photo-unlocked actes, MJ sends code "NEXT" to proceed
-// This makes photo actes auto-unlock via code input already present
-// But for pure photo actes (no code-input block), we auto-unlock
-window.addEventListener('load', () => {
-  // Check if current acte has no code inputs → auto unlock
-  const acte = ACTES[currentActe];
-  if (acte && acte.unlock === 'photo') {
-    // They need to get a code from MJ after sending photo
-    // For actes 1 and 2 that are purely photo-based, 
-    // add a hidden code input behavior via whatsapp block
-  }
-});
 </script>
 </body>
 </html>
